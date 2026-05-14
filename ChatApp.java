@@ -114,10 +114,25 @@ public class ChatApp {
                 }
             }
         }
-        // Only allow messaging if login succeeded 
+        // Only allow messaging if the login succeeded 
         if (!loggedIn) {
             System.out.println("Access denied. Exiting application.");
             input.close();
+        }
+        
+        	System.out.println("\nWelcome to QuickChat.");
+
+        int maxMessages = 0;
+        while (true) {
+            System.out.print("How many messages would you like to send? ");
+            String countStr = input.nextLine().trim();
+            try {
+                maxMessages = Integer.parseInt(countStr);
+                if (maxMessages > 0) break;
+                System.out.println("Please enter a positive number.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a whole number.");
+            }
         }
         
     }
