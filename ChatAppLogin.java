@@ -31,4 +31,13 @@ public class ChatAppLogin {
     public static boolean checkCellPhoneNumber(String cell) {
         return cell.matches("\\+27\\d{9}");
     }
+    /**
+     * Validates recipient cell number:
+     * Must contain an international code and be no more than 10 characters
+     * (after the '+' prefix). Accepts +27 followed by up to 9 digits.
+     */
+    public static boolean checkRecipientNumber(String cell) {
+        // Must start with '+', have international code, and total <= 13 chars
+        return cell.matches("\\+\\d{1,3}\\d{1,9}") && cell.length() <= 13;
+    }
 }
