@@ -1,112 +1,173 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt 
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java 
  */
 package com.mycompany.chatapp;
-
 import java.util.Random;
 
 public class ChatAppMessages {
 
-    // Stores the unique message ID
-    private long messageID;
+    // Stores all sent messages while the program runs
+    private static String messages = "";
 
-    // Stores the message number
+    // Stores total number of messages
+    private static int totalMessages = 0;
+
+    // Message attributes
+    private String messageID;
     private int messageNumber;
-
-    // Stores the recipient phone number
     private String recipient;
-
-    // Stores the actual message text
     private String messageText;
-
-    // Stores the generated message hash
     private String messageHash;
-
-    // Stores the message status
     private String status;
 
-    // Constructor used to create a new message
-    public ChatAppMessages(int messageNumber,
-            String recipient,
-            String messageText) {
-
-        this.messageID = generateMessageID();
+    // Constructor
+    public ChatAppMessages(int messageNumber, String recipient, String messageText) {
 
         this.messageNumber = messageNumber;
-
         this.recipient = recipient;
-
         this.messageText = messageText;
 
-        // Generate the message hash
+        // Generate random message ID
+        this.messageID = generateMessageID();
+
+        // Create message hash
         this.messageHash = createMessageHash();
-
-        // Set default status
-        this.status = "Sent";
     }
 
-    // Generates a random 10-digit message ID
-    private long generateMessageID() {
+    // Generates a random message ID
+    private String generateMessageID() {
 
-        Random rand = new Random();
+        Random random = new Random();
 
-        return 1000000000L
-                + (long) (rand.nextDouble() * 9000000000L);
+        String id = "";
+
+        for (int i = 0; i < 10; i++) {
+            id += random.nextInt(10);
+        }
+
+        return id;
     }
 
-    // Creates the message hash
-    private String createMessageHash() {
+    // Boolean: checkMessageID()
+    // Ensures message ID is not more than 10 characters
+    public boolean checkMessageID() {
 
-        // Get first 2 digits from message ID
-        String firstTwo =
-                String.valueOf(messageID).substring(0, 2);
+        return messageID.length() <= 10;
+    }
 
-        // Split message into words
+    // String: checkRecipientCell()
+    // Ensures recipient number is valid
+    public String checkRecipientCell() {
+
+        if (recipient.length() <= 10 && recipient.startsWith("0")) {
+            return "Cell phone number successfully captured.";
+        } else {
+            return "Cell phone number incorrectly formatted.";
+        }
+    }
+
+    // String: createMessageHash()
+    // Creates and returns the message hash
+    public String createMessageHash() {
+
         String[] words = messageText.split(" ");
 
-        // Get first word
-        String firstWord = words[0];
+        String firstWord = words[0].toUpperCase();
+        String lastWord = words[words.length - 1].toUpperCase();
 
-        // Get last word
-        String lastWord = words[words.length - 1];
-
-        // Return full hash
-        return (firstTwo + ":" + messageNumber + ":"+ firstWord + lastWord).toUpperCase();
+        return messageNumber + ":" +
+                messageID.substring(0, 2) +
+                ":" + firstWord +lastWord;
     }
 
-    // Checks if message is less than 250 characters
-    public static boolean checkMessageLength(String text) {
+    // String: sentMessage()
+    // This allows the user to choose to send/store/disregard
+    public String sentMessage(String choice) {
+        if (choice.equalsIgnoreCase("Send")) {
+            status = "Sent";
 
-        return text.length() <= 250;
+            messages += "\n----------------------";
+            messages += "\nMessage ID: " + messageID;
+            messages += "\nMessage Hash: " + messageHash;
+            messages += "\nRecipient: " + recipient;
+            messages += "\nMessage: " + messageText;
+            messages += "\nStatus: " + status;
+            messages += "\n----------------------\n";
+
+            totalMessages++;
+
+            return "Message successfully sent.";
+
+        } else if (choice.equalsIgnoreCase("Store")) {
+            status = "Stored";
+
+            messages += "\n----------------------";
+            messages += "\nMessage ID: " + messageID;
+            messages += "\nMessage Hash: " + messageHash;
+            messages += "\nRecipient: " + recipient;
+            messages += "\nMessage: " + messageText;
+            messages += "\nStatus: " + status;
+            messages += "\n----------------------\n";
+
+            totalMessages++;
+
+            return "Message successfully stored.";
+
+        } else {
+            status = "Disregarded";
+            return "Message disregarded.";
+        }
     }
 
-    // Displays message details
-    public void printDetails() {
+    // String: printMessages()
+    // Returns all sent messages
+    public static String printMessages() {
 
-        System.out.println("\n----- MESSAGE DETAILS -----");
-
-        System.out.println("Message ID: " + messageID);
-
-        System.out.println("Message Hash: " + messageHash);
-
-        System.out.println("Recipient: " + recipient);
-
-        System.out.println("Message: " + messageText);
-
-        System.out.println("Status: " + status);
-
+        return messages;
     }
 
-    // Returns the current message status
-    public String getStatus() {
+    // Int: returnTotalMessages()
+    // Returns total number of messages sent
+    public static int returnTotalMessages() {
 
-        return status;
+        return totalMessages;
     }
 
-    // Updates the message status
+    // Store message method
+    // Simulates storing messages in JSON format
+    public String storeMessage() {
+
+        return "{"
+                + "\"messageID\":\"" + messageID + "\","
+                + "\"recipient\":\"" + recipient + "\","
+                + "\"message\":\"" + messageText + "\","
+                + "\"hash\":\"" + messageHash + "\","
+                + "\"status\":\"" + status + "\""
+                + "}";
+    }
+
+    // Checks message length
+    public static boolean checkMessageLength(String message) {
+
+        return message.length() <= 250;
+    }
+
+    // Set status
     public void setStatus(String status) {
 
         this.status = status;
+    }
+
+    // Prints message details
+    public void printDetails() {
+
+        System.out.println("\n========== MESSAGE ==========");
+        System.out.println("Message Number: " + messageNumber);
+        System.out.println("Message ID: " + messageID);
+        System.out.println("Recipient: " + recipient);
+        System.out.println("Message: " + messageText);
+        System.out.println("Message Hash: " + messageHash);
+        System.out.println("Status: " + status);
     }
 }
