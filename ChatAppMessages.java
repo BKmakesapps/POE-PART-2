@@ -97,7 +97,7 @@ public class ChatAppMessages {
 
             totalMessages++;
 
-            return "Message successfully sent.";
+            return "Message has been sent successfully.";
 
         } else if (choice.equalsIgnoreCase("Store")) {
             status = "Stored";
@@ -112,7 +112,7 @@ public class ChatAppMessages {
 
             totalMessages++;
 
-            return "Message successfully stored.";
+            return "Message has been stored successfully.";
 
         } else {
             status = "Disregarded";
@@ -135,7 +135,6 @@ public class ChatAppMessages {
     }
 
     // Store message method
-    // Simulates storing messages in JSON format
     public String storeMessage() {
 
         return "{"
