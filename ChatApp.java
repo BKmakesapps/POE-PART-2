@@ -2,7 +2,6 @@ package com.mycompany.chatapp;
 
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class ChatApp {
 
@@ -15,7 +14,7 @@ public class ChatApp {
         Scanner input = new Scanner(System.in);
 
         // Stores all sent messages
-        ArrayList<ChatAppMessages> sentMessages = new ArrayList<>();
+        String sentMessages = "";
 
         // Ask for the user's first name
         System.out.print("Enter your first name: ");
@@ -111,9 +110,28 @@ public class ChatApp {
             return;
         }
 
-        // THE MAIN MENU LOOP
+        // Ask how many messages the user wants to send after login
         int maxMessages = 0;
 
+        while (true) {
+
+            try {
+
+                System.out.print("How many messages would you like to send? ");
+                maxMessages = Integer.parseInt(input.nextLine());
+
+                if (maxMessages > 0) {
+                    break;
+                } else {
+                    System.out.println("Enter a number greater than 0.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Enter a valid number.");
+            }
+        }
+
+        // THE MAIN MENU LOOP
         while (true) {
 
             System.out.println("\n========== MENU ==========");
@@ -127,81 +145,101 @@ public class ChatApp {
             // Option 1: Send Messages
             if (choice.equals("1")) {
 
-                // Ask how many messages the user wants to send
-                if (maxMessages == 0) {
+                // Count how many messages are already stored
+                int currentMessages = 0;
 
-                    while (true) {
-                        System.out.print("How many messages would you like to send? ");
-                        try {
-                            maxMessages = Integer.parseInt(input.nextLine());
-                            if (maxMessages > 0) break;
-                        } catch (Exception e) {
-                            System.out.println("Enter a valid number.");
-                        }
-                    }
+                if (!sentMessages.equals("")) {
+
+                    String[] tempMessages = sentMessages.split("MESSAGE_BREAK");
+                    currentMessages = tempMessages.length;
                 }
 
                 // Check if user reached the message limit
-                if (sentMessages.size() >= maxMessages) {
-                    System.out.println("Message limit reached.");
+                if (currentMessages >= maxMessages) {
+                    System.out.println("You have reached your message limit.");
                     continue;
                 }
 
-                String recipient;
+                // Loop through the number of messages the user chose after login
+                for (int i = currentMessages; i < maxMessages; i++) {
 
-                // Ask until valid number is entered
-                while (true) {
+                    System.out.println("\nMessage " + (i + 1));
 
-                    System.out.print("Enter recipient number: ");
-                    recipient = input.nextLine();
+                    String recipient;
 
-                    if (ChatAppLogin.checkRecipientNumber(recipient)) {
-                        break;
+                    // Ask until valid number is entered
+                    while (true) {
+
+                        System.out.print("Enter recipient number: ");
+                        recipient = input.nextLine();
+
+                        if (ChatAppLogin.checkRecipientNumber(recipient)) {
+                            break;
+                        }
+
+                        System.out.println("Invalid recipient number.");
                     }
 
-                    System.out.println("Invalid recipient number.");
+                    System.out.print("Enter message (max 250 characters): ");
+                    String messageText = input.nextLine();
+
+                    if (!ChatAppMessages.checkMessageLength(messageText)) {
+                        System.out.println("Message too long.");
+                        i--;
+                        continue;
+                    }
+
+                    ChatAppMessages msg =
+                            new ChatAppMessages(i + 1, recipient, messageText);
+
+                    System.out.println("\n1) Send");
+                    System.out.println("2) Discard");
+                    System.out.println("3) Store");
+
+                    System.out.print("Choose: ");
+                    String action = input.nextLine();
+
+                    if (action.equals("1")) {
+
+                        msg.setStatus("Sent");
+
+                        sentMessages +=
+                                "Message ID: " + msg.getMessageID()
+                                + "\nRecipient: " + recipient
+                                + "\nMessage: " + messageText
+                                + "\nStatus: Sent"
+                                + "\nMESSAGE_BREAK\n";
+
+                        System.out.println("Message sent successfully.");
+                        msg.printDetails();
+
+                    } else if (action.equals("2")) {
+
+                        msg.setStatus("Discarded");
+                        System.out.println("Message discarded.");
+                        i--;
+
+                    } else if (action.equals("3")) {
+
+                        msg.setStatus("Stored");
+
+                        sentMessages +=
+                                "Message ID: " + msg.getMessageID()
+                                + "\nRecipient: " + recipient
+                                + "\nMessage: " + messageText
+                                + "\nStatus: Stored"
+                                + "\nMESSAGE_BREAK\n";
+
+                        System.out.println("Message stored.");
+
+                    } else {
+
+                        System.out.println("Invalid option.");
+                        i--;
+                    }
                 }
 
-                System.out.print("Enter message (max 250 characters): ");
-                String messageText = input.nextLine();
-
-                if (!ChatAppMessages.checkMessageLength(messageText)) {
-                    System.out.println("Message too long.");
-                    continue;
-                }
-
-                ChatAppMessages msg =
-                        new ChatAppMessages(sentMessages.size() + 1, recipient, messageText);
-
-                System.out.println("\n1) Send");
-                System.out.println("2) Discard");
-                System.out.println("3) Store");
-
-                System.out.print("Choose: ");
-                String action = input.nextLine();
-
-                if (action.equals("1")) {
-
-                    msg.setStatus("Sent");
-                    sentMessages.add(msg);
-                    System.out.println("Message sent successfully.");
-                    msg.printDetails();
-
-                } else if (action.equals("2")) {
-
-                    msg.setStatus("Discarded");
-                    System.out.println("Message discarded.");
-
-                } else if (action.equals("3")) {
-
-                    msg.setStatus("Stored");
-                    sentMessages.add(msg);
-                    System.out.println("Message stored.");
-
-                } else {
-
-                    System.out.println("Invalid option.");
-                }
+                System.out.println("You have reached your message limit.");
             }
 
             // Option 2
@@ -209,11 +247,19 @@ public class ChatApp {
 
                 System.out.println("Show Sent Messages");
 
-                if (sentMessages.isEmpty()) {
+                if (sentMessages.equals("")) {
+
                     System.out.println("No messages sent yet.");
+
                 } else {
-                    for (ChatAppMessages m : sentMessages) {
-                        m.printDetails();
+
+                    String[] allMessages = sentMessages.split("MESSAGE_BREAK");
+
+                    for (String message : allMessages) {
+
+                        if (!message.trim().equals("")) {
+                            System.out.println(message);
+                        }
                     }
                 }
             }
@@ -231,7 +277,5 @@ public class ChatApp {
                 System.out.println("Invalid option.");
             }
         }
-
-        input.close();
     }
 }

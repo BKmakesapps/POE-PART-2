@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java 
  */
 package com.mycompany.chatapp;
+
 import java.util.Random;
 
 public class ChatAppMessages {
@@ -76,45 +77,49 @@ public class ChatAppMessages {
         String firstWord = words[0].toUpperCase();
         String lastWord = words[words.length - 1].toUpperCase();
 
-        return messageNumber + ":" +
-                messageID.substring(0, 2) +
-                ":" + firstWord +lastWord;
+        return messageNumber + ":"
+                + messageID.substring(0, 2)
+                + ":" + firstWord + lastWord;
     }
 
     // String: sentMessage()
     // This allows the user to choose to send/store/disregard
     public String sentMessage(String choice) {
+
         if (choice.equalsIgnoreCase("Send")) {
+
             status = "Sent";
 
-            messages += "\n----------------------";
-            messages += "\nMessage ID: " + messageID;
-            messages += "\nMessage Hash: " + messageHash;
-            messages += "\nRecipient: " + recipient;
-            messages += "\nMessage: " + messageText;
-            messages += "\nStatus: " + status;
-            messages += "\n----------------------\n";
+            messages +=
+                    "Message ID: " + messageID
+                    + "\nRecipient: " + recipient
+                    + "\nMessage: " + messageText
+                    + "\nMessage Hash: " + messageHash
+                    + "\nStatus: " + status
+                    + "\nMESSAGE_BREAK\n";
 
             totalMessages++;
 
             return "Message has been sent successfully.";
 
         } else if (choice.equalsIgnoreCase("Store")) {
+
             status = "Stored";
 
-            messages += "\n----------------------";
-            messages += "\nMessage ID: " + messageID;
-            messages += "\nMessage Hash: " + messageHash;
-            messages += "\nRecipient: " + recipient;
-            messages += "\nMessage: " + messageText;
-            messages += "\nStatus: " + status;
-            messages += "\n----------------------\n";
+            messages +=
+                    "Message ID: " + messageID
+                    + "\nRecipient: " + recipient
+                    + "\nMessage: " + messageText
+                    + "\nMessage Hash: " + messageHash
+                    + "\nStatus: " + status
+                    + "\nMESSAGE_BREAK\n";
 
             totalMessages++;
 
             return "Message has been stored successfully.";
 
         } else {
+
             status = "Disregarded";
             return "Message disregarded.";
         }
@@ -124,7 +129,24 @@ public class ChatAppMessages {
     // Returns all sent messages
     public static String printMessages() {
 
-        return messages;
+        if (messages.equals("")) {
+            return "No messages sent yet.";
+        }
+
+        String output = "";
+
+        String[] allMessages = messages.split("MESSAGE_BREAK");
+
+        for (String message : allMessages) {
+
+            if (!message.trim().equals("")) {
+
+                output += "\n========== MESSAGE ==========\n";
+                output += message + "\n";
+            }
+        }
+
+        return output;
     }
 
     // Int: returnTotalMessages()
@@ -156,6 +178,36 @@ public class ChatAppMessages {
     public void setStatus(String status) {
 
         this.status = status;
+    }
+
+    // Getter for message ID
+    public String getMessageID() {
+
+        return messageID;
+    }
+
+    // Getter for recipient
+    public String getRecipient() {
+
+        return recipient;
+    }
+
+    // Getter for message text
+    public String getMessageText() {
+
+        return messageText;
+    }
+
+    // Getter for message hash
+    public String getMessageHash() {
+
+        return messageHash;
+    }
+
+    // Getter for status
+    public String getStatus() {
+
+        return status;
     }
 
     // Prints message details
